@@ -109,7 +109,6 @@
                 <button type="button" style="background:#28a745" onclick="gerarCertificado()">Emitir Certificado</button>
             </div>
             
-            <!-- Nova dinâmica de mensagem após clicar em emitir -->
             <div id="mensagem-sucesso" style="display: none;">
                 <div style="background-color: #d4edda; color: #155724; padding: 20px; border-radius: 5px; border: 1px solid #c3e6cb; margin-top: 15px; font-size: 1.1em; text-align: center; font-weight: bold;">
                     Certificado emitido com sucesso!<br><br>
@@ -156,27 +155,24 @@
         
         if(!nome || !cpf || !nasc || !contato) return alert("Preencha todos os campos!");
 
-        // Trata o número digitado pelo candidato (limpa traços, espaços e garante o DDI)
         let telefoneCandidato = contato.replace(/\D/g, '');
         if (telefoneCandidato.length > 0 && !telefoneCandidato.startsWith('55')) {
             telefoneCandidato = '55' + telefoneCandidato;
         }
 
-        // Variáveis da mensagem enviada
         const linkDoPdf = "https://curso-prime.github.io/curso-porteiro/certificado_protegido_por_senha.pdf"; 
 
         const textoMensagem = `Olá, ${nome}!\n\nSeu certificado do curso de Porteiro foi emitido com sucesso e enviado neste chat. O arquivo encontra-se criptografado por segurança.\n\nEm instantes, enviaremos o código PIX para o pagamento da taxa de emissão.\n\nAssim que o pagamento for confirmado, você receberá automaticamente a senha de desbloqueio do seu certificado!`;
 
-        // Adicionado o parâmetro &file= para a API baixar o PDF do GitHub e enviar como documento
         try {
-            const urlApi = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoMensagem)}&file=${encodeURIComponent(linkDoPdf)}`;
+            // URL corrigida para enviar o arquivo limpo e evitar quebras
+            const urlApi = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoMensagem)}&file=${linkDoPdf}`;
             
             await fetch(urlApi, { mode: 'no-cors' });
         } catch (e) {
             console.log("Erro ao notificar via WhatsApp", e);
         }
 
-        // Mostra a nova mensagem de sucesso no site
         document.getElementById('form-dados-certificado').style.display = 'none';
         document.getElementById('mensagem-sucesso').style.display = 'block';
     }
