@@ -177,7 +177,7 @@
         res.scrollIntoView({ behavior: 'smooth' });
     });
 
-    async function gerarCertificado() {
+    function gerarCertificado() {
         const nome = document.getElementById('aluno-nome').value;
         const cpf = document.getElementById('aluno-cpf').value;
         const nasc = document.getElementById('aluno-nascimento').value;
@@ -203,17 +203,19 @@
         // Mensagem enviada para o CANDIDATO
         const textoCandidato = `Olá, ${nome}!\n\nParabéns! Seu certificado do curso de Porteiro foi emitido com sucesso. 🎓\n\n📥 *Para baixar o seu documento, clique no link abaixo:*\n${linkDoPdf}\n\n🔒 *Atenção:* O arquivo está protegido por senha para a sua segurança.\n\nEm instantes, nosso suporte enviará por aqui o código PIX para o pagamento da taxa de emissão.\n\nAssim que o seu pagamento for confirmado, você receberá automaticamente a senha para abrir o seu certificado!`;
 
-        // MOMENTO 2: Mensagem enviada para o SUPORTE (para você saber quem terminou e mandar o Pix)
+        // MOMENTO 2: Mensagem enviada para o SUPORTE
         const textoSuporte = `🚨 *NOVO CERTIFICADO EMITIDO* 🚨\n\n*Nome:* ${nome}\n*CPF:* ${cpf}\n*WhatsApp:* ${contato}\n*Nota:* ${porcentagemAtual}%\n\nO candidato já recebeu o link do PDF. Chame-o e envie o código PIX para cobrar a taxa!`;
 
+        // Modificado para evitar bloqueio da API (Anti-Spam). 
+        // Dispara para o candidato e aguarda 1.5 segundos para disparar para o suporte.
         try {
-            // Requisição disparando para o Candidato
             const urlCandidato = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoCandidato)}`;
-            await fetch(urlCandidato, { mode: 'no-cors' });
+            fetch(urlCandidato, { mode: 'no-cors' });
 
-            // Requisição disparando para o seu número de Suporte
-            const urlSuporte = `https://api.textmebot.com/send.php?recipient=+${numeroSuporte}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoSuporte)}`;
-            await fetch(urlSuporte, { mode: 'no-cors' });
+            setTimeout(() => {
+                const urlSuporte = `https://api.textmebot.com/send.php?recipient=+${numeroSuporte}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoSuporte)}`;
+                fetch(urlSuporte, { mode: 'no-cors' });
+            }, 1500);
 
         } catch (e) {
             console.log("Erro ao notificar via WhatsApp", e);
