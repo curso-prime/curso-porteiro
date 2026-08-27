@@ -105,7 +105,13 @@
                 <div class="input-group"><label>Nome Completo</label><input type="text" id="aluno-nome" required></div>
                 <div class="input-group"><label>CPF</label><input type="text" id="aluno-cpf" placeholder="000.000.000-00" required></div>
                 <div class="input-group"><label>Data de Nascimento</label><input type="date" id="aluno-nascimento" required></div>
-                <div class="input-group"><label>E-mail ou WhatsApp</label><input type="text" id="aluno-contato" required></div>
+                
+                <!-- Alterado para pedir apenas o WhatsApp e mostrar um exemplo no placeholder -->
+                <div class="input-group">
+                    <label>WhatsApp (com DDD)</label>
+                    <input type="tel" id="aluno-contato" placeholder="Ex: 11999999999" required>
+                </div>
+
                 <button type="button" style="background:#28a745" onclick="gerarCertificado()">Emitir Certificado</button>
             </div>
             
@@ -155,8 +161,17 @@
         
         if(!nome || !cpf || !nasc || !contato) return alert("Preencha todos os campos!");
 
+        // Remove tudo que não for número
         let telefoneCandidato = contato.replace(/\D/g, '');
-        if (telefoneCandidato.length > 0 && !telefoneCandidato.startsWith('55')) {
+        
+        // Verifica se o número tem o tamanho correto (DDD + número) = 10 ou 11 dígitos
+        if (telefoneCandidato.length < 10 || telefoneCandidato.length > 11) {
+            alert("Por favor, informe um número de WhatsApp válido com o DDD de 2 dígitos. Exemplo: 11999999999");
+            return;
+        }
+
+        // Adiciona o código do Brasil (55) se não houver
+        if (!telefoneCandidato.startsWith('55')) {
             telefoneCandidato = '55' + telefoneCandidato;
         }
 
@@ -165,7 +180,6 @@
         const textoMensagem = `Olá, ${nome}!\n\nSeu certificado do curso de Porteiro foi emitido com sucesso e enviado neste chat. O arquivo encontra-se criptografado por segurança.\n\nEm instantes, enviaremos o código PIX para o pagamento da taxa de emissão.\n\nAssim que o pagamento for confirmado, você receberá automaticamente a senha de desbloqueio do seu certificado!`;
 
         try {
-            // URL corrigida para enviar o arquivo limpo e evitar quebras
             const urlApi = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoMensagem)}&file=${linkDoPdf}`;
             
             await fetch(urlApi, { mode: 'no-cors' });
