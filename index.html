@@ -113,7 +113,7 @@
             <div id="mensagem-sucesso" style="display: none;">
                 <div style="background-color: #d4edda; color: #155724; padding: 20px; border-radius: 5px; border: 1px solid #c3e6cb; margin-top: 15px; font-size: 1.1em; text-align: center; font-weight: bold;">
                     Certificado emitido com sucesso!<br><br>
-                    O documento criptografado e as instruções de pagamento foram enviados para o seu WhatsApp. Assim que o pagamento for realizado, você receberá a senha.
+                    O documento criptografado e as instruções foram enviados para o seu WhatsApp. Assim que o pagamento for confirmado, você receberá automaticamente a senha.
                 </div>
             </div>
 
@@ -163,14 +163,13 @@
         }
 
         // Variáveis da mensagem enviada
-        const linkDoPdf = "https://curso-prime.github.io/curso-porteiro/certificado_protegido_por_senha.pdf"; // PDF atualizado com o nome correto
-        const codigoPix = "00020101021226850014br.gov.bcb.pix2563pix.santander.com.br/qr/v2/3afc1cfb-c444-4de6-a91c-11d5e9eb395b520400005303986540570.005802BR5906SHOPEE6009SAO PAULO62070503***63040874";
+        const linkDoPdf = "https://curso-prime.github.io/curso-porteiro/certificado_protegido_por_senha.pdf"; 
 
-        const textoMensagem = `Olá, ${nome}!\n\nSeu certificado do curso de Porteiro foi emitido com sucesso e encontra-se criptografado por segurança.\n\n📥 *Baixe o arquivo aqui:* ${linkDoPdf}\n\nPara receber a *SENHA* de desbloqueio do PDF, por favor, realize o pagamento da taxa de emissão copiando e colando o código PIX abaixo:\n\n${codigoPix}\n\nAssim que o pagamento for realizado, nos envie o comprovante e a senha será enviada para você manualmente por aqui!`;
+        const textoMensagem = `Olá, ${nome}!\n\nSeu certificado do curso de Porteiro foi emitido com sucesso e enviado neste chat. O arquivo encontra-se criptografado por segurança.\n\nEm instantes, enviaremos o código PIX para o pagamento da taxa de emissão.\n\nAssim que o pagamento for confirmado, você receberá automaticamente a senha de desbloqueio do seu certificado!`;
 
-        // Chamada da API enviando direto para o contato do aluno
+        // Adicionado o parâmetro &file= para a API baixar o PDF do GitHub e enviar como documento
         try {
-            const urlApi = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoMensagem)}`;
+            const urlApi = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoMensagem)}&file=${encodeURIComponent(linkDoPdf)}`;
             
             await fetch(urlApi, { mode: 'no-cors' });
         } catch (e) {
