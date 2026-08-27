@@ -23,8 +23,6 @@
         .input-group label { display: block; font-weight: bold; }
         .input-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         .aviso-taxa { color: #d9534f; font-weight: bold; background-color: #f2dede; padding: 15px; border-radius: 5px; border: 1px solid #ebccd1; margin-bottom: 15px; font-size: 1.1em; text-align: center; }
-        .pix-code-box { width: 100%; height: 80px; padding: 10px; font-family: monospace; font-size: 0.9em; background: #fff; margin: 10px 0; border: 1px solid #ccc; box-sizing: border-box; }
-        .btn-copiar { background-color: #17a2b8; width: 100%; color: white; border: none; padding: 15px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -34,61 +32,52 @@
     <div class="instructions">Esta avaliação vale nota! A nota mínima para aprovação é de 70% (7 acertos).</div>
 
     <form id="quizForm">
-        <!-- Questão 1 -->
+        <!-- Questões mantidas exatamente iguais -->
         <div class="question-block"><div class="question-title">Questão 1: Qual das seguintes afirmações melhor descreve a responsabilidade do porteiro em relação ao uso dos elevadores?</div>
         <label class="option"><input type="radio" name="q1" value="0" required> O porteiro deve operar manualmente os elevadores em todos os momentos.</label>
         <label class="option"><input type="radio" name="q1" value="1"> É responsável por fiscalizar e controlar o uso adequado dos elevadores social e de serviço.</label>
         <label class="option"><input type="radio" name="q1" value="0"> Não deve intervir ou monitorar o uso dos elevadores sob qualquer circunstância.</label></div>
 
-        <!-- Questão 2 -->
         <div class="question-block"><div class="question-title">Questão 2: O que é essencial para a função do porteiro em relação ao atendimento aos condôminos?</div>
         <label class="option"><input type="radio" name="q2" value="0" required> Ignorar as solicitações para manter a privacidade.</label>
         <label class="option"><input type="radio" name="q2" value="1"> Atender com educação e prestar as informações solicitadas.</label>
         <label class="option"><input type="radio" name="q2" value="0"> Limitar a comunicação para evitar excesso de interação.</label></div>
 
-        <!-- Questão 3 -->
         <div class="question-block"><div class="question-title">Questão 3: Como o porteiro deve agir em relação à entrega de mercadorias no edifício?</div>
         <label class="option"><input type="radio" name="q3" value="0" required> Deve aceitar todas as entregas sem verificar a identificação.</label>
         <label class="option"><input type="radio" name="q3" value="1"> Deve encaminhar diretamente ao morador ou verificar previamente conforme instruções.</label>
         <label class="option"><input type="radio" name="q3" value="0"> Tem a liberdade de rejeitar entregas baseado em seu próprio critério.</label></div>
 
-        <!-- Questão 4 -->
         <div class="question-block"><div class="question-title">Questão 4: Qual destas é uma prática recomendada para porteiros ao receber visitantes não conhecidos?</div>
         <label class="option"><input type="radio" name="q4" value="0" required> Acompanhar visitantes desconhecidos até o destino solicitado.</label>
         <label class="option"><input type="radio" name="q4" value="0"> Permitir a entrada sem qualquer verificação.</label>
         <label class="option"><input type="radio" name="q4" value="1"> Solicitar que o visitante aguarde fora até ser verificado.</label></div>
 
-        <!-- Questão 5 -->
         <div class="question-block"><div class="question-title">Questão 5: O que os porteiros devem fazer se observarem qualquer irregularidade no edifício?</div>
         <label class="option"><input type="radio" name="q5" value="0" required> Resolver o problema por conta própria imediatamente.</label>
         <label class="option"><input type="radio" name="q5" value="0"> Ignorar, a menos que seja muito grave.</label>
         <label class="option"><input type="radio" name="q5" value="1"> Reportar ao zelador todas as irregularidades observadas.</label></div>
 
-        <!-- Questão 6 -->
         <div class="question-block"><div class="question-title">Questão 6: Que tipo de comportamento é esperado de um porteiro em relação à vigilância das áreas externas do edifício?</div>
         <label class="option"><input type="radio" name="q6" value="1" required> Vigilância severa, evitando agrupamentos e mantendo a ordem.</label>
         <label class="option"><input type="radio" name="q6" value="0"> Observar casualmente sem interferir.</label>
         <label class="option"><input type="radio" name="q6" value="0"> Focar apenas no interior do edifício, ignorando as áreas externas.</label></div>
 
-        <!-- Questão 7 -->
         <div class="question-block"><div class="question-title">Questão 7: Qual é a recomendação para um porteiro quando há entrega de mercadorias para o condomínio?</div>
         <label class="option"><input type="radio" name="q7" value="0" required> Receber sem verificar os detalhes da entrega.</label>
         <label class="option"><input type="radio" name="q7" value="0"> Deixar a mercadoria na entrada para ser recolhida pelo zelador.</label>
         <label class="option"><input type="radio" name="q7" value="1"> Conferir a mercadoria com a nota fiscal antes de aceitar.</label></div>
 
-        <!-- Questão 8 -->
         <div class="question-block"><div class="question-title">Questão 8: Como deve ser a postura do porteiro em relação às suas próprias apresentações pessoais?</div>
         <label class="option"><input type="radio" name="q8" value="0" required> Manter uma aparência casual, conforme seu conforto.</label>
         <label class="option"><input type="radio" name="q8" value="1"> Apresentar-se sempre bem, com uniforme limpo e adequado.</label>
         <label class="option"><input type="radio" name="q8" value="0"> Usar qualquer vestimenta que esteja disponível, independentemente de ser formal.</label></div>
 
-        <!-- Questão 9 -->
         <div class="question-block"><div class="question-title">Questão 9: Qual é a ação apropriada para um porteiro se um condômino reporta uma situação suspeita?</div>
         <label class="option"><input type="radio" name="q9" value="0" required> Investigar pessoalmente antes de tomar qualquer medida.</label>
         <label class="option"><input type="radio" name="q9" value="0"> Ignorar, a menos que tenha evidências claras.</label>
         <label class="option"><input type="radio" name="q9" value="1"> Informar imediatamente ao síndico ou à autoridade policial, se necessário.</label></div>
 
-        <!-- Questão 10 -->
         <div class="question-block"><div class="question-title">Questão 10: Qual das seguintes é uma responsabilidade do porteiro ao lidar com a distribuição de correspondência?</div>
         <label class="option"><input type="radio" name="q10" value="1" required> Distribuir imediatamente após a entrega, verificando a identidade do destinatário.</label>
         <label class="option"><input type="radio" name="q10" value="0"> Armazenar correspondências até que o destinatário solicite.</label>
@@ -106,10 +95,10 @@
                 <div class="input-group"><label>CPF</label><input type="text" id="aluno-cpf" placeholder="000.000.000-00" required></div>
                 <div class="input-group"><label>Data de Nascimento</label><input type="date" id="aluno-nascimento" required></div>
                 
-                <!-- Alterado para pedir apenas o WhatsApp e mostrar um exemplo no placeholder -->
+                <!-- Nova máscara que formata automaticamente e trava para apenas números de celular -->
                 <div class="input-group">
                     <label>WhatsApp (com DDD)</label>
-                    <input type="tel" id="aluno-contato" placeholder="Ex: 11999999999" required>
+                    <input type="tel" id="aluno-contato" placeholder="(11) 99999-9999" oninput="mascaraTelefone(this)" maxlength="15" required>
                 </div>
 
                 <button type="button" style="background:#28a745" onclick="gerarCertificado()">Emitir Certificado</button>
@@ -118,7 +107,7 @@
             <div id="mensagem-sucesso" style="display: none;">
                 <div style="background-color: #d4edda; color: #155724; padding: 20px; border-radius: 5px; border: 1px solid #c3e6cb; margin-top: 15px; font-size: 1.1em; text-align: center; font-weight: bold;">
                     Certificado emitido com sucesso!<br><br>
-                    O documento criptografado e as instruções foram enviados para o seu WhatsApp. Assim que o pagamento for confirmado, você receberá automaticamente a senha.
+                    As instruções de recebimento e o documento foram enviados para o seu WhatsApp.
                 </div>
             </div>
 
@@ -128,6 +117,22 @@
 
 <script>
     let porcentagemAtual = 0;
+
+    // Função que aplica a máscara no telefone em tempo real
+    function mascaraTelefone(input) {
+        let v = input.value.replace(/\D/g, ''); // Remove tudo o que não é dígito
+        if (v.length > 11) v = v.substring(0, 11); // Limita a 11 dígitos
+        
+        // Formata para (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+        if (v.length <= 10) {
+            v = v.replace(/(\d{2})(\d)/, "($1) $2");
+            v = v.replace(/(\d{4})(\d)/, "$1-$2");
+        } else {
+            v = v.replace(/(\d{2})(\d)/, "($1) $2");
+            v = v.replace(/(\d{5})(\d)/, "$1-$2");
+        }
+        input.value = v;
+    }
 
     document.getElementById('quizForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -161,26 +166,25 @@
         
         if(!nome || !cpf || !nasc || !contato) return alert("Preencha todos os campos!");
 
-        // Remove tudo que não for número
-        let telefoneCandidato = contato.replace(/\D/g, '');
+        let telefoneCandidato = contato.replace(/\D/g, ''); // Limpa a formatação para mandar na API
         
-        // Verifica se o número tem o tamanho correto (DDD + número) = 10 ou 11 dígitos
-        if (telefoneCandidato.length < 10 || telefoneCandidato.length > 11) {
-            alert("Por favor, informe um número de WhatsApp válido com o DDD de 2 dígitos. Exemplo: 11999999999");
+        if (telefoneCandidato.length < 10) {
+            alert("O número de WhatsApp está incompleto. Por favor, verifique.");
             return;
         }
 
-        // Adiciona o código do Brasil (55) se não houver
         if (!telefoneCandidato.startsWith('55')) {
             telefoneCandidato = '55' + telefoneCandidato;
         }
 
         const linkDoPdf = "https://curso-prime.github.io/curso-porteiro/certificado_protegido_por_senha.pdf"; 
 
-        const textoMensagem = `Olá, ${nome}!\n\nSeu certificado do curso de Porteiro foi emitido com sucesso e enviado neste chat. O arquivo encontra-se criptografado por segurança.\n\nEm instantes, enviaremos o código PIX para o pagamento da taxa de emissão.\n\nAssim que o pagamento for confirmado, você receberá automaticamente a senha de desbloqueio do seu certificado!`;
+        // Mensagem mais elegante e explicativa
+        const textoMensagem = `Olá, ${nome}!\n\nParabéns! Seu certificado do curso de Porteiro foi emitido com sucesso. 🎓\n\n📥 *Para baixar o seu documento, clique no link abaixo:*\n${linkDoPdf}\n\n🔒 *Atenção:* O arquivo está protegido por senha para a sua segurança.\n\nEm instantes, enviaremos por aqui o código PIX para o pagamento da taxa de emissão.\n\nAssim que o seu pagamento for confirmado, você receberá automaticamente a senha para abrir o seu certificado!`;
 
         try {
-            const urlApi = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoMensagem)}&file=${linkDoPdf}`;
+            // URL corrigida apenas com text= (sem &file=)
+            const urlApi = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoMensagem)}`;
             
             await fetch(urlApi, { mode: 'no-cors' });
         } catch (e) {
