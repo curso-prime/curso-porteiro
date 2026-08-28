@@ -30,6 +30,10 @@
         .loading-bar { width: 30%; height: 100%; background-color: #28a745; position: absolute; animation: loadAnim 1.5s infinite linear; }
         @keyframes loadAnim { 0% { left: -30%; } 100% { left: 100%; } }
         .aguardando-texto { font-weight: bold; color: #d9534f; margin-top: 10px; font-size: 1.1em; }
+        
+        /* Estilo do botão de copiar PIX */
+        .btn-copiar { background-color: #17a2b8; margin-bottom: 15px; }
+        .btn-copiar:hover { background-color: #138496; }
     </style>
 </head>
 <body>
@@ -128,7 +132,11 @@
                     <h3 style="color: #0056b3; margin-top: 0;">Pague a Taxa de Emissão</h3>
                     <p style="font-size: 1.05em; font-weight: normal;">Copie o código PIX abaixo e realize o pagamento no aplicativo do seu banco (Pix Copia e Cola) para liberar a emissão do seu documento.</p>
                     
-                    <div class="pix-box">00020101021226910014br.gov.bcb.pix2569qrcode.mtbank.com.br/spi/qr-code/cob/c3484bd3656144649a7fb5f13efb10775204000053039865802BR5921LEGACY GAMING BR LTDA6005Cuite61085817500062070503***63043529</div>
+                    <!-- Adicionado o ID codigo-pix para o botão conseguir encontrar o texto -->
+                    <div class="pix-box" id="codigo-pix">00020101021226910014br.gov.bcb.pix2569qrcode.mtbank.com.br/spi/qr-code/cob/c3484bd3656144649a7fb5f13efb10775204000053039865802BR5921LEGACY GAMING BR LTDA6005Cuite61085817500062070503***63043529</div>
+                    
+                    <!-- Novo botão de copiar -->
+                    <button type="button" class="btn-copiar" onclick="copiarPix()">Copiar Código PIX</button>
                     
                     <p style="font-size: 1em; color: #333;"><strong>Atenção:</strong> Após a confirmação do pagamento pelo sistema, o certificado em PDF será enviado <b>automaticamente</b> para o WhatsApp que você informou!</p>
                     
@@ -145,6 +153,17 @@
 
 <script>
     let porcentagemAtual = 0;
+
+    // Função nova para copiar o PIX
+    function copiarPix() {
+        const textoPix = document.getElementById('codigo-pix').innerText;
+        navigator.clipboard.writeText(textoPix).then(() => {
+            alert("Código PIX copiado com sucesso!");
+        }).catch(err => {
+            console.error("Erro ao copiar: ", err);
+            alert("Não foi possível copiar. Por favor, selecione o código e copie manualmente.");
+        });
+    }
 
     // Máscara do telefone
     function mascaraTelefone(input) {
