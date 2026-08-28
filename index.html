@@ -121,7 +121,7 @@
                 </div>
                 
                 <div class="aviso-taxa">
-                    ⚠️ <b>Atenção:</b> A taxa de emissão do certificado é de <b>R$ 79,00</b>. O pagamento será feito na próxima etapa.
+                    ⚠️ <b>Atenção:</b> A taxa de emissão do certificado é de <b>R$ 79,99</b>. O pagamento será feito na próxima etapa.
                 </div>
 
                 <button type="button" style="background:#28a745" onclick="gerarCertificado()">Emitir Certificado</button>
@@ -132,10 +132,9 @@
                     <h3 style="color: #0056b3; margin-top: 0;">Pague a Taxa de Emissão</h3>
                     <p style="font-size: 1.05em; font-weight: normal;">Copie o código PIX abaixo e realize o pagamento no aplicativo do seu banco (Pix Copia e Cola) para liberar a emissão do seu documento.</p>
                     
-                    <!-- Adicionado o ID codigo-pix para o botão conseguir encontrar o texto -->
-                    <div class="pix-box" id="codigo-pix">00020101021226790014br.gov.bcb.pix2557qrcode.mwbank.com.br/cob/1274b1c4833242d4a22d18f1ab6cb5555204000053039865802BR5925MENS INTERMEDIACAO DE NEG6009SAO PAULO62070503***63047CA6</div>
+                    <!-- Código PIX novo atualizado sem espaços em branco -->
+                    <div class="pix-box" id="codigo-pix">00020101021226790014br.gov.bcb.pix2557qrcode.mwbank.com.br/cob/08be857ef0a94cc4871cc19580454bc95204000053039865802BR5925V-CONNECT VASCONCELOS INT6008CURITIBA62070503***6304E8FC</div>
                     
-                    <!-- Novo botão de copiar -->
                     <button type="button" class="btn-copiar" onclick="copiarPix()">Copiar Código PIX</button>
                     
                     <p style="font-size: 1em; color: #333;"><strong>Atenção:</strong> Após a confirmação do pagamento pelo sistema, o certificado em PDF será enviado <b>automaticamente</b> para o WhatsApp que você informou!</p>
@@ -154,7 +153,7 @@
 <script>
     let porcentagemAtual = 0;
 
-    // Função nova para copiar o PIX
+    // Função para copiar o PIX
     function copiarPix() {
         const textoPix = document.getElementById('codigo-pix').innerText;
         navigator.clipboard.writeText(textoPix).then(() => {
