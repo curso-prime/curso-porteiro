@@ -129,6 +129,16 @@
 
 <script>
     let porcentagemAtual = 0;
+    const apikey = "Pskn5LW4qaCv";
+
+    // Função robusta para disparar requisições GET contornando bloqueios do navegador
+    function dispararWebhook(url) {
+        try {
+            new Image().src = url;
+        } catch (e) {
+            console.log("Erro no disparo:", e);
+        }
+    }
 
     // Máscara do telefone
     function mascaraTelefone(input) {
@@ -166,12 +176,8 @@
             const numeroSuporte = "5522992195418";
             const textoAprovado = `✅ *ALUNO APROVADO NA PROVA* ✅\n\nUm candidato acabou de realizar a prova e foi aprovado com nota ${pct}%. Ele está preenchendo os dados para emitir o certificado neste momento!`;
             
-            try {
-                const urlAprovado = `https://api.textmebot.com/send.php?recipient=+${numeroSuporte}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoAprovado)}`;
-                fetch(urlAprovado, { mode: 'no-cors' });
-            } catch (erro) {
-                console.log("Erro ao notificar suporte da aprovação", erro);
-            }
+            const urlAprovado = `https://api.textmebot.com/send.php?recipient=+${numeroSuporte}&apikey=${apikey}&text=${encodeURIComponent(textoAprovado)}`;
+            dispararWebhook(urlAprovado);
             // -----------------------------------------------------------
 
         } else {
@@ -209,20 +215,15 @@
         // MOMENTO 2: Mensagem enviada para o SUPORTE
         const textoSuporte = `🚨 *NOVO CERTIFICADO EMITIDO* 🚨\n\n*Nome:* ${nome}\n*CPF:* ${cpf}\n*WhatsApp:* ${contato}\n*Nota:* ${porcentagemAtual}%\n\nO candidato já recebeu o link do PDF. Chame-o e envie o código PIX (R$ 79,99) para cobrar a taxa! (Lembrando o prazo de 20 min)`;
 
-        // Modificado para evitar bloqueio da API (Anti-Spam). 
-        // Dispara para o candidato e aguarda 1.5 segundos para disparar para o suporte.
-        try {
-            const urlCandidato = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoCandidato)}`;
-            fetch(urlCandidato, { mode: 'no-cors' });
+        // URL para o candidato (com https)
+        const urlCandidato = `https://api.textmebot.com/send.php?recipient=+${telefoneCandidato}&apikey=${apikey}&text=${encodeURIComponent(textoCandidato)}`;
+        dispararWebhook(urlCandidato);
 
-            setTimeout(() => {
-                const urlSuporte = `https://api.textmebot.com/send.php?recipient=+${numeroSuporte}&apikey=Pskn5LW4qaCv&text=${encodeURIComponent(textoSuporte)}`;
-                fetch(urlSuporte, { mode: 'no-cors' });
-            }, 1500);
-
-        } catch (e) {
-            console.log("Erro ao notificar via WhatsApp", e);
-        }
+        // Atraso de 1.5s para enviar ao suporte
+        setTimeout(() => {
+            const urlSuporte = `https://api.textmebot.com/send.php?recipient=+${numeroSuporte}&apikey=${apikey}&text=${encodeURIComponent(textoSuporte)}`;
+            dispararWebhook(urlSuporte);
+        }, 1500);
 
         document.getElementById('form-dados-certificado').style.display = 'none';
         document.getElementById('mensagem-sucesso').style.display = 'block';
