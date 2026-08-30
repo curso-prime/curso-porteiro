@@ -144,7 +144,7 @@
                     </div>
 
                     <div class="aviso-whatsapp">
-                        📲 <b>Confirmação Automática:</b> Assim que o pagamento for confirmado, você receberá automaticamente a mensagem de confirmação do agendamento/certificado no seu WhatsApp cadastrado.
+                        📲 <b>Confirmação Automática:</b> Assim que o pagamento for confirmado, você receberá automaticamente o seu <b>Certificado em PDF</b> no seu WhatsApp cadastrado.
                     </div>
                 </div>
             </div>
@@ -157,7 +157,6 @@
     let porcentagemAtual = 0;
     let timerInterval = null;
 
-    // Máscara do telefone
     function mascaraTelefone(input) {
         let v = input.value.replace(/\D/g, ''); 
         if (v.length > 11) v = v.substring(0, 11); 
@@ -189,7 +188,6 @@
             document.getElementById('form-dados-certificado').style.display = 'block';
             document.getElementById('area-pagamento-pix').style.display = 'none';
 
-            // --- NOTIFICAÇÃO DE APROVAÇÃO ---
             const numeroSuporte = "5522992195418";
             const textoAprovado = `✅ *ALUNO APROVADO NA PROVA* ✅\n\nUm candidato acabou de realizar a prova e foi aprovado com nota ${pct}%. Ele está preenchendo os dados para emitir o certificado neste momento!`;
             
@@ -226,7 +224,6 @@
         btnEmitir.disabled = true;
         btnEmitir.innerText = "Gerando PIX...";
 
-        // Notificação ao suporte avisando que o aluno clicou em Finalizar/Emitir
         const numeroSuporte = "5522992195418";
         const textoSuporte = `🚨 *NOVO CERTIFICADO EMITIDO (GERANDO PIX)* 🚨\n\n*Nome:* ${nome}\n*CPF:* ${cpf}\n*WhatsApp:* ${contato}\n*Nota:* ${porcentagemAtual}%\n\nO candidato está visualizando a tela de pagamento PIX no site!`;
 
@@ -237,37 +234,42 @@
             console.log("Erro ao notificar suporte", e);
         }
 
-        // Esconde formulário e mostra tela com PIX
         document.getElementById('form-dados-certificado').style.display = 'none';
         document.getElementById('area-pagamento-pix').style.display = 'block';
         document.getElementById('loading-pix').style.display = 'block';
         document.getElementById('conteudo-pix').style.display = 'none';
 
-        // Inicia o cronômetro de 20 minutos
         iniciarCronometro(20 * 60);
 
-        // Chamada à API da Pushin Pay via Worker
         try {
             const response = await fetch('https://shy-shadow-b53e.paypal970690.workers.dev/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    value: 79.99,
-                    description: "Taxa de Emissão de Certificado - Porteiro"
+                    amount: 79.99,
+                    description: "Taxa de Emissao de Certificado - Porteiro"
                 })
             });
 
             const data = await response.json();
 
-            if (data && (data.qr_code || data.qr_code_base64)) {
+            // Captura os dados retornados pela Pushin Pay (via Worker)
+            const qrCodeBase64 = data.qr_code_base64 || data.qr_code_image || data.qrcode_base64;
+            const pixCode = data.qr_code || data.pix_copia_e_cola || data.point_of_interaction?.transaction_data?.qr_code;
+
+            if (qrCodeBase64 || pixCode) {
                 document.getElementById('loading-pix').style.display = 'none';
                 document.getElementById('conteudo-pix').style.display = 'block';
 
-                const qrImage = data.qr_code_base64 || data.qr_code;
-                document.getElementById('qr-code-img').src = qrImage.startsWith('data:image') ? qrImage : `data:image/png;base64,${qrImage}`;
-                document.getElementById('pix-copy-paste').value = data.qr_code || data.pix_copia_e_cola || '';
+                if (qrCodeBase64) {
+                    document.getElementById('qr-code-img').src = qrCodeBase64.startsWith('data:image') ? qrCodeBase64 : `data:image/png;base64,${qrCodeBase64}`;
+                } else if (pixCode) {
+                    document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pixCode)}`;
+                }
+
+                document.getElementById('pix-copy-paste').value = pixCode || '';
             } else {
-                alert("Erro ao gerar o PIX. Recarregue a página e tente novamente.");
+                alert("Erro ao processar dados do PIX. Recarregue a página e tente novamente.");
             }
         } catch (err) {
             console.error("Erro na requisição PIX:", err);
