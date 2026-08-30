@@ -24,7 +24,6 @@
         .input-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         .aviso-taxa { color: #856404; font-weight: normal; background-color: #fff3cd; padding: 15px; border-radius: 5px; border: 1px solid #ffeeba; margin-bottom: 15px; font-size: 0.95em; text-align: left; }
         
-        /* Estilos da Seção de Pagamento */
         .pix-container { background-color: #f8f9fa; border: 2px dashed #28a745; padding: 20px; border-radius: 10px; text-align: center; margin-top: 15px; }
         .timer-box { font-size: 1.2em; font-weight: bold; color: #d9534f; background: #fdf7f7; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
         .qr-code-img { max-width: 200px; width: 100%; height: auto; margin: 15px 0; border: 1px solid #ddd; padding: 5px; background: #fff; border-radius: 5px; }
@@ -246,30 +245,34 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    amount: 79.99,
+                    value: 7999,
+                    amount: 7999,
                     description: "Taxa de Emissao de Certificado - Porteiro"
                 })
             });
 
             const data = await response.json();
+            console.log("Resposta Worker PIX:", data);
 
-            // Captura os dados retornados pela Pushin Pay (via Worker)
-            const qrCodeBase64 = data.qr_code_base64 || data.qr_code_image || data.qrcode_base64;
-            const pixCode = data.qr_code || data.pix_copia_e_cola || data.point_of_interaction?.transaction_data?.qr_code;
+            // Mapeamento amplo de chaves de retorno do PIX
+            const pixCode = data.qr_code || data.pix_copia_e_cola || data.point_of_interaction?.transaction_data?.qr_code || data.qr_code_text;
+            const qrCodeBase64 = data.qr_code_base64 || data.qr_code_image || data.qrcode_base64 || data.point_of_interaction?.transaction_data?.qr_code_base64;
 
-            if (qrCodeBase64 || pixCode) {
+            if (pixCode || qrCodeBase64) {
                 document.getElementById('loading-pix').style.display = 'none';
                 document.getElementById('conteudo-pix').style.display = 'block';
 
-                if (qrCodeBase64) {
-                    document.getElementById('qr-code-img').src = qrCodeBase64.startsWith('data:image') ? qrCodeBase64 : `data:image/png;base64,${qrCodeBase64}`;
-                } else if (pixCode) {
-                    document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pixCode)}`;
-                }
+                const campoCopiaCole = document.getElementById('pix-copy-paste');
+                campoCopiaCole.value = pixCode || '';
 
-                document.getElementById('pix-copy-paste').value = pixCode || '';
+                const imgQrCode = document.getElementById('qr-code-img');
+                if (qrCodeBase64) {
+                    imgQrCode.src = qrCodeBase64.startsWith('data:image') ? qrCodeBase64 : `data:image/png;base64,${qrCodeBase64}`;
+                } else if (pixCode) {
+                    imgQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pixCode)}`;
+                }
             } else {
-                alert("Erro ao processar dados do PIX. Recarregue a página e tente novamente.");
+                alert("Erro ao ler os dados do PIX retornado. Tente novamente.");
             }
         } catch (err) {
             console.error("Erro na requisição PIX:", err);
