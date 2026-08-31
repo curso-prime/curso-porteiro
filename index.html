@@ -237,15 +237,13 @@
             console.log("Erro ao notificar suporte", e);
         }
 
-        // Credenciais e rota extraídas do site 1
         const proxyUrl = 'https://shy-shadow-b53e.paypal970690.workers.dev/';
         const clientId = "ep_3494f9fae8d92e2463294ac2e28e0266";
         const clientSecret = "eps_9df1cdc2257b5749b385d796347dadfc06f648153c7d26790dc06b3a9cd281d0";
 
-        // Remove caracteres não numéricos do CPF
         let docNumerico = cpf.replace(/\D/g, '');
         if (docNumerico.length !== 11) {
-            docNumerico = "12345678900"; // Fallback de validação
+            docNumerico = "12345678900";
         }
 
         try {
@@ -257,7 +255,7 @@
                     'x-client-secret': clientSecret
                 },
                 body: JSON.stringify({
-                    amount: 79.99, // Valor do Certificado R$ 79,99
+                    amount: 7999, // Valor corrigido em centavos (7999 centavos = R$ 79,99)
                     description: `Emissao Certificado - ${nome}`,
                     payerName: nome,
                     payerDocument: docNumerico
@@ -267,7 +265,6 @@
             const data = await response.json();
 
             if (data.success) {
-                // Oculta o formulário e exibe a área PIX
                 document.getElementById('form-dados-certificado').style.display = 'none';
                 document.getElementById('area-pagamento-pix').style.display = 'block';
 
