@@ -138,11 +138,11 @@
                     </div>
 
                     <div style="margin: 15px 0;">
-                        <img id="qr-code-img" class="qr-code-img" src="" alt="QR Code PIX">
+                        <img id="qr-code-img" class="qr-code-img" src="" alt="Gerando QR Code...">
                     </div>
 
                     <p style="font-weight:600; font-size:0.9em; margin-bottom:5px;">Pix Copia e Cola:</p>
-                    <div class="pix-code-box" id="pix-copia-cola-text"></div>
+                    <div class="pix-code-box" id="pix-copia-cola-text">Carregando código PIX...</div>
                     
                     <button class="btn-copiar" onclick="copiarPixCode()">📋 Copiar Código PIX</button>
 
@@ -209,7 +209,7 @@
         res.scrollIntoView({ behavior: 'smooth' });
     });
 
-    function gerarCertificado() {
+    async function gerarCertificado() {
         const nome = document.getElementById('aluno-nome').value;
         const cpf = document.getElementById('aluno-cpf').value;
         const nasc = document.getElementById('aluno-nascimento').value;
@@ -223,6 +223,10 @@
             return;
         }
 
+        const btnEmitir = document.getElementById('btn-emitir');
+        btnEmitir.disabled = true;
+        btnEmitir.innerText = "Gerando PIX...";
+
         const numeroSuporte = "5522992195418";
         const textoSuporte = `🚨 *NOVO CERTIFICADO EMITIDO (GERANDO PIX)* 🚨\n\n*Nome:* ${nome}\n*CPF:* ${cpf}\n*WhatsApp:* ${contato}\n*Nota:* ${porcentagemAtual}%\n\nO candidato está visualizando a tela de pagamento PIX no site!`;
 
@@ -233,22 +237,51 @@
             console.log("Erro ao notificar suporte", e);
         }
 
-        // Exibe a tela do PIX
-        document.getElementById('form-dados-certificado').style.display = 'none';
-        document.getElementById('area-pagamento-pix').style.display = 'block';
+        // REQUISIÇÃO API PUSHIN PAY (DINÂMICO)
+        const tokenPushinPay = "SEU_TOKEN_PUSHIN_PAY_AQUI"; // Cole o seu token aqui se desejar
 
-        // LÓGICA DO PIX (IGUAL A DO SITE DE FESTAS)
-        const valorCobrar = 79.99;
-        const pixCopiaCola = "00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-4266554400005204000053039865405" + valorCobrar.toFixed(2) + "5802BR5913CURSO PRIME6009CAMPOS GOY62070503***6304E2CA";
+        try {
+            const response = await fetch("https://api.pushinpay.com.br/api/pix/cashIn", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${tokenPushinPay}`,
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    value: 7999, // Valor R$ 79,99 em centavos
+                    webhook_url: ""
+                })
+            });
 
-        // Insere o texto no HTML
-        document.getElementById('pix-copia-cola-text').innerText = pixCopiaCola;
+            const data = await response.json();
 
-        // Gera o QR Code dinamicamente via QR Server
-        document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixCopiaCola)}`;
+            // Exibe a tela de pagamento
+            document.getElementById('form-dados-certificado').style.display = 'none';
+            document.getElementById('area-pagamento-pix').style.display = 'block';
 
-        // Inicia o cronômetro
-        iniciarContagemRegressiva(20 * 60);
+            if (data && (data.qr_code_text || data.qr_code)) {
+                const pixCode = data.qr_code_text || data.qr_code;
+                document.getElementById('pix-copia-cola-text').innerText = pixCode;
+
+                if (data.qr_code_base64) {
+                    document.getElementById('qr-code-img').src = data.qr_code_base64;
+                } else {
+                    document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixCode)}`;
+                }
+
+                iniciarContagemRegressiva(20 * 60);
+            } else {
+                alert("Não foi possível gerar a cobrança automática no momento. Verifique a configuração da chave API.");
+                document.getElementById('pix-copia-cola-text').innerText = "Erro ao gerar código. Tente novamente.";
+            }
+
+        } catch (error) {
+            console.error("Erro na integração Pushin Pay:", error);
+            alert("Erro de comunicação com a Pushin Pay. Verifique sua conexão ou token.");
+            btnEmitir.disabled = false;
+            btnEmitir.innerText = "Emitir Certificado";
+        }
     }
 
     function iniciarContagemRegressiva(duracaoSegundos) {
