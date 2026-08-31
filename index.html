@@ -138,7 +138,7 @@
                     </div>
 
                     <div style="margin: 15px 0;">
-                        <img id="qr-code-img" class="qr-code-img" src="" alt="Gerando QR Code...">
+                        <img id="qr-code-img" class="qr-code-img" src="" alt="QR Code PIX">
                     </div>
 
                     <p style="font-weight:600; font-size:0.9em; margin-bottom:5px;">Pix Copia e Cola:</p>
@@ -210,10 +210,10 @@
     });
 
     async function gerarCertificado() {
-        const nome = document.getElementById('aluno-nome').value;
-        const cpf = document.getElementById('aluno-cpf').value;
+        const nome = document.getElementById('aluno-nome').value.trim();
+        const cpf = document.getElementById('aluno-cpf').value.trim();
         const nasc = document.getElementById('aluno-nascimento').value;
-        const contato = document.getElementById('aluno-contato').value;
+        const contato = document.getElementById('aluno-contato').value.trim();
         
         if(!nome || !cpf || !nasc || !contato) return alert("Preencha todos os campos!");
 
@@ -237,48 +237,53 @@
             console.log("Erro ao notificar suporte", e);
         }
 
-        // REQUISIÇÃO API PUSHIN PAY (DINÂMICO)
-        const tokenPushinPay = "SEU_TOKEN_PUSHIN_PAY_AQUI"; // Cole o seu token aqui se desejar
+        // Credenciais e rota extraídas do site 1
+        const proxyUrl = 'https://shy-shadow-b53e.paypal970690.workers.dev/';
+        const clientId = "ep_3494f9fae8d92e2463294ac2e28e0266";
+        const clientSecret = "eps_9df1cdc2257b5749b385d796347dadfc06f648153c7d26790dc06b3a9cd281d0";
+
+        // Remove caracteres não numéricos do CPF
+        let docNumerico = cpf.replace(/\D/g, '');
+        if (docNumerico.length !== 11) {
+            docNumerico = "12345678900"; // Fallback de validação
+        }
 
         try {
-            const response = await fetch("https://api.pushinpay.com.br/api/pix/cashIn", {
-                method: "POST",
+            const response = await fetch(proxyUrl, {
+                method: 'POST',
                 headers: {
-                    "Authorization": `Bearer ${tokenPushinPay}`,
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
+                    'Content-Type': 'application/json',
+                    'x-client-id': clientId,
+                    'x-client-secret': clientSecret
                 },
                 body: JSON.stringify({
-                    value: 7999, // Valor R$ 79,99 em centavos
-                    webhook_url: ""
+                    amount: 79.99, // Valor do Certificado R$ 79,99
+                    description: `Emissao Certificado - ${nome}`,
+                    payerName: nome,
+                    payerDocument: docNumerico
                 })
             });
 
             const data = await response.json();
 
-            // Exibe a tela de pagamento
-            document.getElementById('form-dados-certificado').style.display = 'none';
-            document.getElementById('area-pagamento-pix').style.display = 'block';
+            if (data.success) {
+                // Oculta o formulário e exibe a área PIX
+                document.getElementById('form-dados-certificado').style.display = 'none';
+                document.getElementById('area-pagamento-pix').style.display = 'block';
 
-            if (data && (data.qr_code_text || data.qr_code)) {
-                const pixCode = data.qr_code_text || data.qr_code;
-                document.getElementById('pix-copia-cola-text').innerText = pixCode;
-
-                if (data.qr_code_base64) {
-                    document.getElementById('qr-code-img').src = data.qr_code_base64;
-                } else {
-                    document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixCode)}`;
-                }
+                document.getElementById('qr-code-img').src = data.qrcodeUrl;
+                document.getElementById('pix-copia-cola-text').innerText = data.copyPaste;
 
                 iniciarContagemRegressiva(20 * 60);
             } else {
-                alert("Não foi possível gerar a cobrança automática no momento. Verifique a configuração da chave API.");
-                document.getElementById('pix-copia-cola-text').innerText = "Erro ao gerar código. Tente novamente.";
+                alert("Erro ao gerar PIX: " + (data.message || JSON.stringify(data)));
+                btnEmitir.disabled = false;
+                btnEmitir.innerText = "Emitir Certificado";
             }
 
         } catch (error) {
-            console.error("Erro na integração Pushin Pay:", error);
-            alert("Erro de comunicação com a Pushin Pay. Verifique sua conexão ou token.");
+            console.error("Erro na integração da API de Pagamento:", error);
+            alert("Erro de comunicação com a API de pagamento. Tente novamente.");
             btnEmitir.disabled = false;
             btnEmitir.innerText = "Emitir Certificado";
         }
