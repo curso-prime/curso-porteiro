@@ -121,7 +121,7 @@
                 </div>
                 
                 <div class="aviso-taxa">
-                    ⚠️ <b>Atenção:</b> A taxa de emissão do certificado é de <b>R$ 79,99</b>.
+                    ⚠️ <b>Atenção:</b> A taxa de emissão do certificado é de <b>R$ 79,00</b>.
                 </div>
 
                 <button type="button" id="btn-emitir" style="background:#28a745" onclick="gerarCertificado()">Emitir Certificado</button>
@@ -130,7 +130,7 @@
             <div id="area-pagamento-pix" style="display: none;">
                 <div class="pix-container">
                     <h3 style="color: #28a745; margin-top: 0;">Pagamento via PIX</h3>
-                    <p style="font-size:0.95em; color:#576574;">Realize o pagamento de <strong>R$ 79,99</strong> para concluir a emissão do seu certificado.</p>
+                    <p style="font-size:0.95em; color:#576574;">Realize o pagamento de <strong>R$ 79,00</strong> para concluir a emissão do seu certificado.</p>
 
                     <div class="timer-box">
                         ⏳ Tempo restante para efetuar o pagamento:
@@ -255,7 +255,7 @@
                     'x-client-secret': clientSecret
                 },
                 body: JSON.stringify({
-                    amount: 7999, // Valor corrigido em centavos (7999 centavos = R$ 79,99)
+                    amount: 79, // Valor em Reais como número inteiro (R$ 79,00)
                     description: `Emissao Certificado - ${nome}`,
                     payerName: nome,
                     payerDocument: docNumerico
